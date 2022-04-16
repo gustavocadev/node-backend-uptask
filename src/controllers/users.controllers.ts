@@ -1,26 +1,27 @@
-import { Request, Response } from "express"
-import { UserModel } from "../models/User"
-import { UserType } from "../types/types"
-import bcryptjs from "bcryptjs"
-import { randomUUID } from "crypto"
+import { Request, Response } from "express";
+import { UserModel } from "../models/User";
+import { RequestWithUser, UserType } from "../types/types";
+import bcryptjs from "bcryptjs";
+import { randomUUID } from "crypto";
+import { Types } from "mongoose";
 
 const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await UserModel.find().lean()
-    res.json(users)
+    const users = await UserModel.find().lean();
+    res.json(users);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 const createUser = async (req: Request<{}, {}, UserType>, res: Response) => {
   try {
     // destructuring the req.body
-    const { name, email, password, ...body } = req.body
+    const { name, email, password, ...body } = req.body;
 
     // Hash password
-    const salt = await bcryptjs.genSalt(10)
-    const passwordHashed = await bcryptjs.hash(password, salt)
+    const salt = await bcryptjs.genSalt(10);
+    const passwordHashed = await bcryptjs.hash(password, salt);
 
     // Create user
     const newUser = {
@@ -28,19 +29,27 @@ const createUser = async (req: Request<{}, {}, UserType>, res: Response) => {
       email,
       password: passwordHashed,
       token: randomUUID(),
-    }
+    };
 
     // create the model instance
-    const user = new UserModel(newUser)
+    const user = new UserModel(newUser);
 
     // Save user
-    const userCreated = await user.save()
+    const userCreated = await user.save();
 
     // Send response
-    res.json(userCreated)
+    res.json(userCreated);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
-export { getUsers, createUser }
+const userProfile = async (req: RequestWithUser, res: Response) => {
+  try {
+    res.json(req.user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { getUsers, createUser, userProfile };

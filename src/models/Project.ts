@@ -1,5 +1,5 @@
-import { Schema, model, Types } from "mongoose";
-import { ProjectType } from "../types/types";
+import { Schema, model, Types } from 'mongoose'
+import { ProjectType } from '../types/types'
 
 const ProjectSchema = new Schema(
   {
@@ -24,18 +24,25 @@ const ProjectSchema = new Schema(
     },
     author: {
       type: Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
+    // asi indico que sera un array de mongoid, y cada mongoid hara referencia a un modelo
+    tasks: [
+      {
+        type: Types.ObjectId,
+        ref: 'Task',
+      }
+    ],
     contributors: [
       {
         type: Types.ObjectId,
-        ref: "User",
+        ref: 'User',
       },
     ],
   },
   {
     timestamps: true,
   }
-);
+)
 
-export const ProjectModel = model<ProjectType>("Project", ProjectSchema);
+export const ProjectModel = model<ProjectType>('Project', ProjectSchema)
